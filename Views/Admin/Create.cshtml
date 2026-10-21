@@ -1,0 +1,29 @@
+﻿@model GadgetShop.Models.Product
+
+<div class="container mt-5">
+    <h2>Add New Product</h2>
+
+    <form action="/admin/create" method="post" enctype="multipart/form-data">
+
+        <label>Name</label>
+        <input class="form-control mb-2" name="Name" required />
+
+        <label>Category</label>
+        <select class="form-control mb-2" name="Category" required>
+            <option>Mobile</option>
+            <option>Laptop</option>
+            <option>Accessory</option>
+        </select>
+
+        <label>Price</label>
+        <input class="form-control mb-2" name="Price" type="number" required />
+
+        <label>Stock</label>
+        <input class="form-control mb-2" name="Stock" type="number" required />
+
+        <label>Product Image</label>
+        <input class="form-control mb-3" type="file" name="img" />
+
+        <button class="btn btn-primary">Save</button>
+    </form>
+</div>

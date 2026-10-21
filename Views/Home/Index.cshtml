@@ -1,0 +1,780 @@
+﻿@model IEnumerable<GadgetShop.Models.Product>
+
+@{
+    ViewData["Title"] = "Nexora";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+    /* MAKE FULL SCREEN LAYOUT ON LAPTOP */
+    .container {
+        max-width: 100% !important;
+    }
+
+    /* Reduce side padding so it feels truly full width */
+    .container, .container-fluid {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .search-input {
+        height: 55px;
+        font-size: 17px;
+        padding-left: 45px;
+    }
+
+    .search-wrapper i {
+        top: 50% !important;
+        transform: translateY(-50%);
+    }
+    #productGrid {
+        margin-top: 10px !important;
+    }
+
+    .product-card {
+        min-height: 430px;
+    }
+
+    :root {
+        --bg-dark: #050914;
+        --bg-gradient: radial-gradient(circle at top, #10244a 0%, #08152d 40%, #030711 80%);
+        --text-main: #f7f7f7;
+        --card-bg-dark: #121214;
+        --card-border-dark: #2a2a30;
+        --accent: #168cff;
+        --accent-soft: rgba(22, 140, 255, 0.5);
+    }
+
+    body {
+        background: var(--bg-gradient);
+        color: var(--text-main);
+    }
+
+        body.light-theme {
+            background: #f5f5f7;
+            color: #111;
+        }
+
+
+    .page-wrapper {
+        min-height: 100vh;
+        padding-bottom: 40px;
+        transition: background 0.3s ease;
+    }
+
+    /* TOP BAR */
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .brand-title {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #d9edff;
+        text-shadow: 0 0 12px rgba(0, 153, 255, 0.9);
+    }
+
+    .theme-toggle-btn {
+        border-radius: 999px;
+        padding: 6px 14px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(10,10,10,0.85);
+        color: #ffeedd;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        backdrop-filter: blur(8px);
+    }
+
+    .admin-btn {
+        border: 1px solid #168cff;
+        background: rgba(7, 24, 48, 0.95);
+        color: #e6f4ff;
+        box-shadow: 0 0 10px rgba(0, 132, 255, 0.35);
+    }
+
+        .admin-btn:hover,
+        .admin-btn:focus-visible {
+            border-color: #49adff;
+            background: linear-gradient(135deg, #168cff, #0754c7);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(0, 153, 255, 0.65);
+        }
+
+    body.light-theme .page-wrapper {
+        background: linear-gradient(135deg, #eef5ff, #dce9ff);
+    }
+
+    body.light-theme .theme-toggle-btn {
+        background: #dce9ff;
+        color: #102b50;
+        border-color: #7abaff;
+    }
+
+    body.light-theme .search-input {
+        background: #ffffff;
+        color: #222;
+        border-color: #7abaff;
+    }
+
+
+    /* TIME BOX – NEON BLUE */
+    .time-box-container {
+        width: 100%; /* FULL WIDTH */
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .glossy-time-box {
+        width: 100%; /* FULL WIDTH */
+        max-width: 100%; /* No limit */
+        padding: 25px 0;
+        font-size: 30px;
+        font-weight: 600;
+        text-align: center;
+        border-radius: 18px;
+        color: #e8f5ff;
+        background: linear-gradient(135deg, rgba(0, 128, 255, 0.2), rgba(0, 0, 0, 0.65));
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 153, 255, 0.75);
+        box-shadow: 0 0 12px rgba(0, 153, 255, 0.75), 0 0 35px rgba(0, 76, 255, 0.45);
+    }
+
+        .glossy-time-box span {
+            display: block;
+            margin-top: 4px;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(0, 170, 255, 0.9);
+        }
+
+
+    /* SEARCH + CATEGORY FILTER */
+    .filter-bar {
+        margin-top: 5px; /* search bar time box এর কাছে */
+        margin-bottom: 10px; /* নিচের gap কমানো */
+        gap: 10px;
+    }
+
+    /* SEARCH WRAPPER */
+    .search-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+        /* SEARCH ICON CENTERED */
+        .search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            opacity: 0.9;
+            color: #77c5ff;
+        }
+
+    /* SEARCH BOX BIGGER + PREMIUM */
+    .search-input {
+        height: 55px; /* bigger search bar */
+        border-radius: 14px; /* soft rectangle */
+        border: 1px solid rgba(0, 153, 255, 0.4);
+        padding-left: 50px;
+        background: rgba(20,20,20,0.75);
+        color: #e6f4ff;
+        font-size: 17px;
+        backdrop-filter: blur(6px);
+    }
+
+        .search-input::placeholder {
+            color: #a9d9ff;
+            opacity: .8;
+        }
+
+    body.light-theme .search-input {
+        background: #ffffff;
+        color: #222;
+        border-color: #7abaff;
+    }
+    /*moving code */
+  
+    /* CATEGORY BUTTONS */
+    .category-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 14px;
+        padding: 8px 18px;
+        border: 1px solid rgba(255,255,255,0.25);
+        cursor: pointer;
+        font-size: 15px;
+        background: rgba(20,20,20,0.75);
+        color: #e2f2ff;
+        backdrop-filter: blur(6px);
+        transition: 0.2s;
+    }
+
+        /* ACTIVE CATEGORY */
+        .category-pill.active {
+            border-color: #58b5ff;
+            box-shadow: 0 0 12px rgba(0, 153, 255, 0.85);
+            background: linear-gradient(135deg, #168cff, #0754c7);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+    /* LIGHT THEME */
+    body.light-theme .category-pill {
+        background: #f3f8ff;
+        color: #15385f;
+        border-color: #9bcaff;
+    }
+
+
+    /* PRODUCT CARDS */
+    /* PRODUCT CARD – PREMIUM GLOW STYLE */
+    .product-card {
+        background: rgba(15, 15, 15, 0.9);
+        border: 1px solid rgba(22, 140, 255, 0.25);
+        border-radius: 18px;
+        padding: 5px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+    }
+
+        /* HOVER EFFECT — FLOAT + BLUE GLOW */
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 132, 255, 0.28);
+            border-color: rgba(22, 140, 255, 0.9);
+        }
+    .clickable-card {
+        cursor: pointer;
+    }
+
+    /* IMAGE */
+    .product-img {
+        width: 100%;
+        height: 260px;
+        object-fit: contain;
+    }
+
+    /* DARK MODE — TEXT LIGHTER */
+    .product-card h5,
+    .product-card p,
+    .product-card span {
+        color: #f3f3f3 !important;
+    }
+
+    /* Slight glow on title */
+    .product-card h5 {
+        font-weight: 700;
+        text-shadow: 0 0 6px rgba(255, 255, 255, 0.25);
+    }
+
+    /* STOCK COLORS SAME */
+    .stock-low {
+        color: #ff4d4f;
+        font-weight: bold;
+    }
+
+    .stock-medium {
+        color: #ffb020;
+        font-weight: bold;
+    }
+
+    .stock-high {
+        color: #4cd137;
+        font-weight: bold;
+    }
+
+    /* LIGHT MODE VERSION */
+    body.light-theme .product-card {
+        background: #ffffff;
+        border-color: #b9d9ff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+        body.light-theme .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        /* LIGHT MODE TEXT DARK */
+        body.light-theme .product-card h5,
+        body.light-theme .product-card p,
+        body.light-theme .product-card span {
+            color: #111 !important;
+        }
+
+    /* Modal adjust for dark theme */
+    .modal-content {
+        background-color: #111;
+        color: #fff;
+    }
+
+    body.light-theme .modal-content {
+        background-color: #fff;
+        color: #000;
+    }
+</style>
+
+
+<div class="page-wrapper">
+
+    <div class="container">
+        <!-- TOP BAR -->
+        <div class="container">
+            <div class="top-bar">
+
+           
+                
+
+                <!-- MIDDLE: SEARCH BAR (GREEN BOX POSITION) -->
+                <div class="flex-grow-1 mx-4">
+                    <div class="search-wrapper">
+                        <i class="bi bi-search"></i>
+                        <input id="searchBox"
+                               type="text"
+                               class="form-control search-input"
+                               placeholder="Search by name or category..." />
+                    </div>
+                </div>
+
+                <!-- RIGHT: THEME + ADMIN -->
+                <div class="d-flex align-items-center gap-2">
+                    <button id="themeToggle" class="theme-toggle-btn" type="button">
+                        <span id="themeIcon">🌙</span>
+                        <span id="themeText">Dark</span>
+                    </button>
+
+
+                    <a href="/admin/login" class="btn admin-btn">
+                        <i class="bi bi-person-gear me-1"></i> Admin
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CATEGORY FILTER BELOW SEARCH -->
+        <div class="container mt-3">
+            <div class="row filter-bar">
+                <div class="col-12 d-flex gap-2 flex-wrap">
+
+                    <button class="category-pill active" data-cat="All" type="button" onclick="setCategory('All', this)">
+                        <i class="bi bi-grid"></i>
+                        <span>All</span>
+                    </button>
+
+                    <button class="category-pill" data-cat="iPhone" type="button" onclick="setCategory('iPhone', this)">
+                        <i class="bi bi-phone"></i>
+                        <span>iPhone</span>
+                    </button>
+
+                    <button class="category-pill" data-cat="Android" type="button" onclick="setCategory('Android', this)">
+                        <i class="bi bi-phone-fill"></i>
+                        <span>Android</span>
+                    </button>
+
+                    <button class="category-pill" data-cat="Laptop" type="button" onclick="setCategory('Laptop', this)">
+                        <i class="bi bi-laptop"></i>
+                        <span>Laptop</span>
+                    </button>
+
+                    <button class="category-pill" data-cat="Accessory" type="button" onclick="setCategory('Accessory', this)">
+                        <i class="bi bi-headphones"></i>
+                        <span>Accessories</span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- FULL-WIDTH TIME BOX BANNER -->
+        <div class="time-box-container full-banner">
+            <div class="glossy-time-box">
+                <div id="liveDate">Loading date...</div>
+                <span id="liveClock">--:--:--</span>
+
+                <div class="offer-container">
+                    <div class="offer-text">
+                        Use this code for 10% OFF → SAVE10
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <!-- PRODUCT LIST -->
+        <div class="container mt-2">
+            <div class="row" id="productGrid">
+                @foreach (var product in Model)
+
+                {
+                    var stockClass = product.Stock < 5 ? "stock-low"
+                                   : product.Stock < 10 ? "stock-medium"
+                                   : "stock-high";
+
+                    <div class="col-md-4 mb-4 product-item"
+                         data-name="@product.Name"
+                         data-category="@product.Category">
+                        <div class="card product-card shadow-sm clickable-card" onclick="openModal(@product.Id)">
+
+
+                            <img src="@product.Image" class="product-img p-3" />
+
+                            <div class="card-body text-center">
+                                <h5>@product.Name</h5>
+                                <p class="text-muted">@product.Category</p>
+                                <p class="fw-bold">৳ @product.Price</p>
+
+                                <p class="@stockClass">Stock: @product.Stock</p>
+
+
+
+                                @if (product.Stock == 0)
+                                {
+                                    <button class="btn btn-sm btn-secondary mt-2" disabled>
+                                        Out of Stock
+                                    </button>
+                                }
+                                else if (product.Stock <= 5)
+                                {
+                                    <div class="d-flex flex-column gap-1">
+                                        <span class="badge bg-warning text-dark">Low Stock</span>
+
+                                        <form asp-controller="Cart" asp-action="Add" method="post">
+                                            <input type="hidden" name="productId" value="@product.Id" />
+                                            <button class="btn btn-sm btn-outline-success">
+                                                Add to Cart
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <form asp-controller="Cart" asp-action="Add" method="post">
+                                        <input type="hidden" name="productId" value="@product.Id" />
+                                        <button class="btn btn-sm btn-outline-success mt-2">
+                                            Add to Cart
+                                        </button>
+                                    </form>
+                                }
+
+
+                                <form asp-controller="Wishlist" asp-action="Add" method="post" class="d-inline">
+                                    <input type="hidden" name="productId" value="@product.Id" />
+                                    <button class="btn btn-sm btn-outline-warning mt-2">♥ Wishlist</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+<!-- PRODUCT MODAL -->
+<div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 id="modalTitle">Product Details</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-md-5">
+                        <img id="modalImg" class="img-fluid" />
+                    </div>
+
+                    <div class="col-md-7">
+                        <h4 id="modalName"></h4>
+                        <p id="modalCategory"></p>
+
+                        <h5>৳ <span id="modalPrice"></span></h5>
+                        <p>Stock: <span id="modalStock"></span></p>
+
+                        <div class="mt-3">
+                            <label class="fw-bold">Quantity:</label>
+                            <input type="number" id="qty" class="form-control" min="1" value="1" oninput="updatePrice()">
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="fw-bold">Shipping:</label>
+                            <select id="shipping" class="form-select" onchange="updatePrice()">
+                                <option value="Standard">Standard (৳100)</option>
+                                <option value="Express">Express (৳300)</option>
+                            </select>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="fw-bold">Coupon:</label>
+                            <input type="text" id="coupon" class="form-control" placeholder="SAVE10" oninput="updatePrice()">
+                        </div>
+
+                        <hr>
+
+                        <h5>Subtotal: ৳ <span id="subtotal">0</span></h5>
+                        <h6 class="text-success">Discount: -৳ <span id="discount">0</span></h6>
+                        <h6>Shipping: ৳ <span id="shipCost">0</span></h6>
+                        <h6>VAT (5%): ৳ <span id="vat">0</span></h6>
+
+                        <h4 class="mt-3 fw-bold">Total: ৳ <span id="total">0</span></h4>
+
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5>Related Products</h5>
+                <div class="row" id="relatedProducts"></div>
+
+                <hr>
+
+                <h5>Customer Reviews</h5>
+                <div id="reviewList"></div>
+
+                <h6 class="mt-3">Add Review</h6>
+
+                <input type="text" id="reviewUser" class="form-control mb-2" placeholder="Your Name">
+                <select id="reviewStars" class="form-select mb-2">
+                    <option value="5">⭐ ⭐ ⭐ ⭐ ⭐</option>
+                    <option value="4">⭐ ⭐ ⭐ ⭐</option>
+                    <option value="3">⭐ ⭐ ⭐</option>
+                    <option value="2">⭐ ⭐</option>
+                    <option value="1">⭐</option>
+                </select>
+                <textarea id="reviewComment" class="form-control mb-2" placeholder="Write a review..."></textarea>
+
+                <button class="btn btn-primary" onclick="submitReview()">Submit Review</button>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>/* THEME TOGGLE (NEON BLUE) */
+    const themeToggleBtn = document.getElementById("themeToggle");
+    const themeIcon = document.getElementById("themeIcon");
+    const themeText = document.getElementById("themeText");
+
+    function applyTheme(theme) {
+        if (theme === "light") {
+            document.body.classList.add("light-theme");
+            themeIcon.textContent = "🌙";
+            themeText.textContent = "Dark";
+        } else {
+            document.body.classList.remove("light-theme");
+            themeIcon.textContent = "☀️";
+            themeText.textContent = "Light";
+        }
+    }
+
+    let savedTheme = localStorage.getItem("theme") || "dark";
+    applyTheme(savedTheme);
+
+    themeToggleBtn.addEventListener("click", () => {
+        savedTheme = (savedTheme === "dark") ? "light" : "dark";
+        localStorage.setItem("theme", savedTheme);
+        applyTheme(savedTheme);
+    });
+
+    /* LIVE DATE & TIME */
+    function updateGlossyClock() {
+        let now = new Date();
+        let h = now.getHours();
+        let m = now.getMinutes();
+        let s = now.getSeconds();
+        let ampm = h >= 12 ? "PM" : "AM";
+
+        if (h > 12) h -= 12;
+        if (h === 0) h = 12;
+
+        m = m < 10 ? "0" + m : m;
+        s = s < 10 ? "0" + s : s;
+
+        let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        let dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        let timeStr = `${h}:${m}:${s} ${ampm}`;
+
+        document.getElementById("liveDate").innerText = dateStr;
+        document.getElementById("liveClock").innerText = timeStr;
+    }
+    setInterval(updateGlossyClock, 1000);
+    updateGlossyClock();
+
+    /* SEARCH + CATEGORY FILTER (CLEAN + FAST) */
+
+    let currentCategory = "All";
+    const searchBox = document.getElementById("searchBox");
+    const productItems = document.querySelectorAll(".product-item");
+
+    // Main filter function
+    function applyFilter() {
+        const text = searchBox.value.toLowerCase();
+
+        productItems.forEach(item => {
+            const name = item.dataset.name.toLowerCase();
+            const cat = item.dataset.category.toLowerCase();
+
+            const matchText = name.includes(text) || cat.includes(text);
+            const matchCategory = (currentCategory === "All") || (cat === currentCategory.toLowerCase());
+
+            item.style.display = (matchText && matchCategory) ? "" : "none";
+        });
+    }
+
+    // search bar input event
+    searchBox.addEventListener("input", applyFilter);
+
+    // category buttons event
+    function setCategory(cat, btn) {
+        currentCategory = cat;
+
+        document.querySelectorAll(".category-pill")
+            .forEach(pill => pill.classList.remove("active"));
+
+        btn.classList.add("active");
+
+        applyFilter();
+    }
+
+
+
+    /* MODAL + PRICE + RELATED + REVIEWS */
+    let currentProductId = 0;
+
+    function openModal(id) {
+        currentProductId = id;
+
+        fetch(`/shop/product/${id}`)
+            .then(res => res.json())
+            .then(p => {
+                document.getElementById("modalTitle").innerText = p.name;
+                document.getElementById("modalName").innerText = p.name;
+                document.getElementById("modalCategory").innerText = p.category;
+                document.getElementById("modalPrice").innerText = p.price;
+                document.getElementById("modalStock").innerText = p.stock;
+                document.getElementById("modalImg").src = p.image;
+
+                updatePrice();
+                loadRelated(id);
+                loadReviews(id);
+
+                new bootstrap.Modal(document.getElementById('productModal')).show();
+            });
+    }
+
+    function updatePrice() {
+        let qty = document.getElementById("qty").value;
+        let shipping = document.getElementById("shipping").value;
+        let coupon = document.getElementById("coupon").value;
+
+        fetch("/shop/calculate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                productId: currentProductId,
+                quantity: qty,
+                shipping: shipping,
+                coupon: coupon
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("subtotal").innerText = data.subtotal;
+                document.getElementById("discount").innerText = data.discount;
+                document.getElementById("shipCost").innerText = data.shipping;
+                document.getElementById("vat").innerText = data.vat;
+                document.getElementById("total").innerText = data.total;
+            });
+    }
+
+    function loadRelated(id) {
+        fetch(`/shop/recommend/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                let container = document.getElementById("relatedProducts");
+                container.innerHTML = "";
+
+                data.items.forEach(p => {
+                    container.innerHTML += `
+                        <div class="col-md-4 text-center mb-3">
+                            <img src="${p.image}" class="img-fluid" style="height:120px;object-fit:contain;">
+                            <p class="fw-bold">${p.name}</p>
+                            <p>৳ ${p.price}</p>
+                        </div>
+                    `;
+                });
+            });
+    }
+
+    function loadReviews(productId) {
+        fetch(`/review/list/${productId}`)
+            .then(res => res.json())
+            .then(list => {
+                let container = document.getElementById("reviewList");
+                container.innerHTML = "";
+
+                list.forEach(r => {
+                    container.innerHTML += `
+                        <div class="border p-2 mb-2 rounded">
+                            <strong>${r.userName}</strong> - ⭐ ${r.stars}<br>
+                            ${r.comment}
+                        </div>
+                    `;
+                });
+            });
+    }
+
+    function submitReview() {
+        let data = {
+            productId: currentProductId,
+            userName: document.getElementById("reviewUser").value,
+            stars: document.getElementById("reviewStars").value,
+            comment: document.getElementById("reviewComment").value
+        };
+
+        fetch("/review/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(r => {
+                alert("Review Added!");
+                loadReviews(currentProductId);
+            });
+    }
+
+    </script>

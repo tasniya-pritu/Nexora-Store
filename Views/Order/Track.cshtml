@@ -1,0 +1,201 @@
+﻿@model GadgetShop.Models.Order
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Order Tracking</title>
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --accent: #ff8c00;
+            --accent-soft: rgba(255, 140, 0, 0.15);
+            /* LIGHT */
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #212529;
+            --table-alt: #fffaf3;
+            /* DARK */
+            --bg-dark: #050508;
+            --card-dark: #121214;
+            --text-dark: #f7f7f7;
+            --table-dark-alt: #1a1a1d;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
+
+            body.dark-theme {
+                background: var(--bg-dark);
+                color: var(--text-dark);
+            }
+
+        .tracking-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            border-top: 5px solid var(--accent);
+            transition: background 0.3s;
+        }
+
+        body.dark-theme .tracking-card {
+            background: var(--card-dark);
+        }
+
+        .page-title,
+        .section-title {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .order-info p {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .status-badge {
+            background: var(--accent-soft);
+            color: var(--accent);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        table {
+            color: inherit;
+        }
+
+        thead {
+            background: var(--accent-soft);
+        }
+
+        body.dark-theme thead {
+            background: rgba(255, 140, 0, 0.25);
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--table-alt);
+        }
+
+        body.dark-theme tbody tr:nth-child(even) {
+            background: var(--table-dark-alt);
+        }
+
+        th, td {
+            vertical-align: middle;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+        }
+
+            .btn-accent:hover {
+                background: #e07b00;
+            }
+
+        /* THEME TOGGLE */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- THEME BUTTON -->
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <i class="bi bi-moon-stars-fill"></i>
+    </button>
+
+    <div class="container mt-5">
+        <div class="tracking-card">
+
+            <h2 class="page-title mb-3">
+                <i class="bi bi-truck"></i> Order Tracking
+            </h2>
+
+            <div class="order-info mb-4">
+                <p>
+                    <i class="bi bi-receipt"></i>
+                    <strong> Order ID:</strong> @Model.Id
+                </p>
+
+                <p>
+                    <i class="bi bi-info-circle"></i>
+                    <strong> Status:</strong>
+                    <span class="status-badge">
+                        <i class="bi bi-clock-history"></i> @Model.Status
+                    </span>
+                </p>
+            </div>
+
+            <h4 class="section-title mb-2">
+                <i class="bi bi-box-seam"></i> Items
+            </h4>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th><i class="bi bi-tag"></i> Name</th>
+                        <th class="text-center"><i class="bi bi-123"></i> Qty</th>
+                        <th class="text-end"><i class="bi bi-currency-dollar"></i> Price</th>
+                        <th class="text-end"><i class="bi bi-calculator"></i> Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td class="text-center">@item.Quantity</td>
+                            <td class="text-end">@item.UnitPrice</td>
+                            <td class="text-end">@item.Total</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <a class="btn btn-accent mt-3" href="/Order/Invoice/@Model.Id">
+                <i class="bi bi-file-earmark-text"></i> View Invoice
+            </a>
+
+        </div>
+    </div>
+
+    <script>function toggleTheme() {
+            document.body.classList.toggle("dark-theme");
+            localStorage.setItem(
+                "theme",
+                document.body.classList.contains("dark-theme") ? "dark" : "light"
+            );
+        }
+
+        // Load saved theme
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark-theme");
+        }</script>
+
+</body>
+</html>

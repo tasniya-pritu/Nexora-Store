@@ -1,0 +1,35 @@
+﻿@model GadgetShop.Models.Product
+
+<div class="container mt-5">
+    <h2>Edit Product</h2>
+
+    <form action="/admin/edit" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" name="Id" value="@Model.Id" />
+
+        <label>Name</label>
+        <input class="form-control mb-2" name="Name" value="@Model.Name" required />
+
+        <label>Category</label>
+        <select class="form-control mb-2" name="Category">
+            <option selected>@Model.Category</option>
+            <option>Mobile</option>
+            <option>Laptop</option>
+            <option>Accessory</option>
+        </select>
+
+        <label>Price</label>
+        <input class="form-control mb-2" name="Price" type="number" value="@Model.Price" required />
+
+        <label>Stock</label>
+        <input class="form-control mb-2" name="Stock" type="number" value="@Model.Stock" required />
+
+        <p>Current Image:</p>
+        <img src="@Model.Image" width="100" class="mb-3" style="border-radius:5px;" />
+
+        <label>Change Image</label>
+        <input class="form-control mb-3" type="file" name="img" />
+
+        <button class="btn btn-primary">Update</button>
+    </form>
+</div>

@@ -1,0 +1,160 @@
+﻿@model IEnumerable<GadgetShop.Models.Product>
+
+<style>
+    .admin-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #ffcc88;
+        text-shadow: 0 0 12px rgba(255,140,0,0.8);
+        margin-top: 30px;
+    }
+
+    .admin-table {
+        background: rgba(15, 15, 15, 0.85);
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid rgba(255,140,0,0.3);
+        box-shadow: 0 0 18px rgba(255,140,0,0.1);
+    }
+
+        .admin-table thead {
+            background: rgba(255,140,0,0.15);
+        }
+
+        .admin-table th {
+            color: #ffddaa;
+            font-weight: 700;
+            font-size: 15px;
+            padding: 14px;
+        }
+
+        .admin-table td {
+            color: #ffffff;
+            padding: 14px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(255,140,0,0.1);
+        }
+
+        .admin-table tbody tr:hover {
+            background: rgba(255,140,0,0.1);
+            transition: 0.25s;
+        }
+
+    /* 🔴 FIX: TEXT VISIBILITY ON LOW / OUT STOCK */
+    .table-warning td,
+    .table-warning th {
+        color: #000 !important;
+        font-weight: 700;
+    }
+
+    .table-danger td,
+    .table-danger th {
+        color: #fff !important;
+        font-weight: 700;
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #ff8c00, #ff4500);
+        border: none;
+        font-weight: 700;
+        color: #1a0500;
+        padding: 10px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(255,140,0,0.5);
+    }
+
+    .img-thumb {
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.15);
+    }
+</style>
+
+@{
+    var lowStockProducts = Model.Where(p => p.Stock <= 5).ToList();
+}
+
+<!-- 🔝 TOP CARD -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card shadow"
+             style="background: rgba(0,0,0,0.6);
+                    border: 1px solid rgba(255,140,0,0.6);">
+            <div class="card-body text-center">
+                <h6 class="fw-bold text-warning">
+                    Low Stock Products
+                </h6>
+                <h1 class="fw-bold text-light">
+                    @lowStockProducts.Count
+                </h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="admin-title">All Products</h3>
+
+<a href="/admin/create" class="btn-create">+ Add New Product</a>
+
+<!-- ⚠️ LOW STOCK ALERT WITH PRODUCT NAMES -->
+@if (lowStockProducts.Any())
+{
+    <div class="alert alert-warning">
+        <h6 class="fw-bold mb-2">
+            ⚠️ Low / Out of Stock Products
+        </h6>
+
+        <ul class="mb-0">
+            @foreach (var p in lowStockProducts)
+            {
+                <li>
+                    <strong>@p.Name</strong> — Stock: @p.Stock
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+<!-- 📦 PRODUCT TABLE -->
+<table class="table admin-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Cat</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th width="180">Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr class="@(p.Stock == 0 ? "table-danger" : p.Stock <= 5 ? "table-warning" : "")">
+                <td>@p.Id</td>
+                <td>
+                    <img src="@p.Image" width="60" height="60" class="img-thumb" />
+                </td>
+                <td>@p.Name</td>
+                <td>@p.Category</td>
+                <td>৳ @p.Price</td>
+                <td>@p.Stock</td>
+
+                <td>
+                    <a href="/admin/edit/@p.Id" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <form action="/admin/delete" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@p.Id" />
+                        <button class="btn btn-danger btn-sm">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

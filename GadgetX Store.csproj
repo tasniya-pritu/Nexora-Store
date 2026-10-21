@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>GadgetX_Store</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+  <ItemGroup>
+    <None Remove="SERVICES\" />
+    <None Remove="Views\Cart\" />
+    <None Remove="Views\Order\" />
+    <None Remove="Views\Wishlist\" />
+    <None Remove="Views\Admin\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SERVICES\" />
+    <Folder Include="Views\Cart\" />
+    <Folder Include="Views\Order\" />
+    <Folder Include="Views\Wishlist\" />
+    <Folder Include="Views\Admin\" />
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\images\" />
+  </ItemGroup>
+</Project>

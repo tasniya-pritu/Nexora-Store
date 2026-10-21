@@ -1,0 +1,171 @@
+﻿@model List<GadgetShop.Models.CartItem>
+
+@{
+    decimal subtotal = Model.Sum(x => x.Total);
+    decimal vat = subtotal * 0.05m;
+    decimal shipping = 100;
+    decimal discount = 0;
+    decimal total = subtotal + vat + shipping;
+}
+
+<style>
+    .checkout-box {
+        background: rgba(15, 15, 15, 0.85);
+        padding: 25px;
+        border-radius: 16px;
+        border: 1px solid rgba(255,140,0,0.3);
+        box-shadow: 0 0 20px rgba(255,140,0,0.15);
+        margin-top: 40px;
+        color: #ffeccc;
+    }
+
+    .checkout-title {
+        color: #ffddaa;
+        text-align: center;
+        font-size: 30px;
+        font-weight: 800;
+        text-shadow: 0 0 12px rgba(255,140,0,.8);
+        margin-bottom: 25px;
+    }
+
+    .summary-box {
+        background: rgba(0,0,0,0.4);
+        padding: 20px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,140,0,0.2);
+    }
+
+    .order-items {
+        background: rgba(0,0,0,0.4);
+        padding: 15px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,140,0,0.2);
+        margin-bottom: 20px;
+    }
+
+    .order-items table {
+        color: #ffeccc;
+    }
+
+    .btn-coupon {
+        background: #ff8c00;
+        color: #1a0500;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-weight: bold;
+        box-shadow: 0 0 12px rgba(255,140,0,.5);
+    }
+</style>
+
+<div class="container checkout-box">
+
+    <h2 class="checkout-title">Checkout</h2>
+
+    <div class="row">
+
+        <!-- LEFT : CUSTOMER FORM -->
+        <div class="col-md-7">
+            <form method="post">
+
+                <label class="form-label">Full Name</label>
+                <input name="customerName" class="form-control mb-3" required />
+
+                <label class="form-label">Address</label>
+                <textarea name="address" class="form-control mb-3" required></textarea>
+
+                <label class="form-label">Payment</label>
+                <select name="paymentMethod" class="form-select mb-3">
+                    <option>Cash on Delivery</option>
+                    <option>Online Payment (Simulation)</option>
+                </select>
+
+                <button class="btn btn-success w-100 mt-3">
+                    Place Order
+                </button>
+
+            </form>
+        </div>
+
+        <!-- RIGHT : SUMMARY -->
+        <div class="col-md-5">
+
+            <!-- 🛒 ORDER ITEMS -->
+            <div class="order-items">
+                <h5 class="mb-3">Your Items</h5>
+
+                <table class="table table-sm table-borderless">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th class="text-end">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>x @item.Quantity</td>
+                                <td class="text-end">৳ @item.Total</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 💰 SUMMARY -->
+            <div class="summary-box">
+                <h4 class="mb-3">Order Summary</h4>
+
+                <p>Subtotal: ৳ <span id="sum-sub">@subtotal</span></p>
+                <p>VAT (5%): ৳ <span id="sum-vat">@vat</span></p>
+                <p>Shipping: ৳ <span id="sum-ship">@shipping</span></p>
+
+                <!-- COUPON -->
+                <hr />
+                <label class="form-label mt-2">Have a Coupon?</label>
+                <div class="d-flex">
+                    <input id="couponInput" class="form-control me-2" placeholder="SAVE10" />
+                    <button type="button" class="btn-coupon" onclick="applyCoupon()">Apply</button>
+                </div>
+
+                <p class="mt-2 text-success fw-bold">
+                    Discount: -৳ <span id="sum-discount">0</span>
+                </p>
+
+                <hr />
+                <h3>Total: ৳ <span id="sum-total">@total</span></h3>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function applyCoupon() {
+        let code = document.getElementById("couponInput").value.trim().toUpperCase();
+
+        let subtotal = parseFloat(document.getElementById("sum-sub").innerText);
+        let vat = subtotal * 0.05;
+        let shipping = 100;
+        let discount = 0;
+
+        if (code === "SAVE10") discount = subtotal * 0.10;
+        else if (code === "SAVE20") discount = subtotal * 0.20;
+        else if (code === "NEW50") discount = 50;
+        else if (code === "FREESHIP") shipping = 0;
+        else {
+            alert("Invalid Coupon!");
+            discount = 0;
+        }
+
+        let total = subtotal + vat + shipping - discount;
+
+        document.getElementById("sum-vat").innerText = vat.toFixed(2);
+        document.getElementById("sum-ship").innerText = shipping.toFixed(2);
+        document.getElementById("sum-discount").innerText = discount.toFixed(2);
+        document.getElementById("sum-total").innerText = total.toFixed(2);
+    }
+</script>
